@@ -1,0 +1,51 @@
+# Go-Scrapy Project Rules
+
+## Directory Structure
+
+- The `/api` directory must contain ONLY API specification files (OpenAPI/Swagger definitions, JSON schema files, protocol definition files)
+- The `/api` directory must NOT contain any Go implementation code
+- All API implementation code should be located in the `/internal/app/api` directory
+- Reusable public code should be placed in the `/pkg` directory
+- Application-specific private code should be placed in the `/internal/app` directory
+- Follow other conventions of the standard Go project layout
+
+## Naming Conventions
+
+- Use semantic naming rather than technical naming (e.g., use `app/api` instead of `http`)
+- Avoid using protocol names as directory names (such as http, grpc, etc.)
+- Directory names should reflect functional domains rather than technical implementations
+- Follow Go naming conventions (camelCase, lowercase package names, etc.)
+
+## Code Organization
+
+- Use the Factory pattern to create scraper instances (`scraper.ScraperFactory`)
+- Use interface-based design (`scraper.Scraper` interface)
+- Use the Repository pattern to abstract data persistence details
+- Use the Command pattern to implement CLI functionality
+- Follow clean architecture principles
+- Keep business logic separate from the transport layer
+
+## Route Configuration
+
+- Avoid route conflicts, especially when involving wildcard routes
+- Swagger wildcard routes `/swagger/*any` and static file routes cannot conflict
+- Use separate path prefixes to provide OpenAPI specification files
+
+## Dependency Management
+
+- Use Go modules for dependency management
+- Explicitly specify dependency versions
+- Minimize the number of third-party dependencies
+
+## Documentation Standards
+
+- Write API specifications in OpenAPI/Swagger format
+- Document API design decisions in markdown files
+- All exported functions and types should have comments
+
+## Testing Strategy
+
+- Core functionality should have unit tests
+- API endpoints should have integration tests
+- Use table-driven tests where appropriate
+- Use mocks when testing external dependencies 

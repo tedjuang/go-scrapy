@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: Go-Scrapy API
+  description: API for scraping and managing product information
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+    description: Base API path
+
+paths:
+  /products/scrape:
+    post:
+      summary: Scrape a product from a URL
+      description: Scrape a product from a given URL and website
+      tags:
+        - products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScrapeProductRequest"
+      responses:
+        "200":
+          description: Product information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Scraper not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+
+  /products/search:
+    post:
+      summary: Search for products
+      description: Search for products on a given website
+      tags:
+        - products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchProductsRequest"
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "404":
+          description: Scraper not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+
+  /products:
+    get:
+      summary: Get all products
+      description: Get all stored products
+      tags:
+        - products
+      responses:
+        "200":
+          description: All products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      description: Get a specific product by ID
+      tags:
+        - products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+
+components:
+  schemas:
+    ScrapeProductRequest:
+      type: object
+      required:
+        - url
+        - website
+      properties:
+        url:
+          type: string
+          example: https://item.rakuten.co.jp/book/14583459/
+        website:
+          type: string
+          example: rakuten
+
+    SearchProductsRequest:
+      type: object
+      required:
+        - keyword
+        - website
+      properties:
+        keyword:
+          type: string
+          example: nintendo switch
+        website:
+          type: string
+          example: rakuten
+        max_results:
+          type: integer
+          example: 5
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        url:
+          type: string
+        website:
+          type: string
+        image_url:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ProductResponse:
+      type: object
+      properties:
+        product:
+          $ref: "#/components/schemas/Product"
+        error:
+          type: string
+
+    ProductsResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        count:
+          type: integer
+        error:
+          type: string

@@ -1,0 +1,1 @@
+{"server":{"host":"localhost","port":8080},"data":{"dir":"./data","file":"products.json"},"scraping":{"userAgent":"Mozilla/5.0","timeout":30,"retries":3},"api":{"rateLimit":100,"maxResults":50}}

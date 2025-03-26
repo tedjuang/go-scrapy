@@ -1,0 +1,227 @@
+openapi: 3.0.0
+info:
+  title: Scrapy API
+  description: API for scraping and tracking products from e-commerce websites
+  version: 1.0.0
+  contact:
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+tags:
+  - name: products
+    description: Product related operations
+
+paths:
+  /api/v1/products:
+    get:
+      summary: Get all products
+      description: Retrieve all stored products
+      tags:
+        - products
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/products/{id}:
+    get:
+      summary: Get product by ID
+      description: Get a specific product by ID
+      tags:
+        - products
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/products/scrape:
+    post:
+      summary: Scrape a product
+      description: Scrape a product from a given URL and website
+      tags:
+        - products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScrapeProductRequest"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Scraper not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/products/search:
+    post:
+      summary: Search for products
+      description: Search for products on a given website
+      tags:
+        - products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchProductsRequest"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Scraper not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        imageURL:
+          type: string
+        url:
+          type: string
+        source:
+          type: string
+        scraped:
+          type: string
+          format: date-time
+
+    ScrapeProductRequest:
+      type: object
+      required:
+        - url
+        - website
+      properties:
+        url:
+          type: string
+          example: https://item.rakuten.co.jp/book/14583459/
+        website:
+          type: string
+          example: rakuten
+
+    SearchProductsRequest:
+      type: object
+      required:
+        - keyword
+        - website
+      properties:
+        keyword:
+          type: string
+          example: nintendo switch
+        website:
+          type: string
+          example: rakuten
+        max_results:
+          type: integer
+          default: 10
+          example: 5
+
+    ProductResponse:
+      type: object
+      properties:
+        product:
+          $ref: "#/components/schemas/Product"
+        error:
+          type: string
+
+    ProductsResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        count:
+          type: integer
+        error:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
